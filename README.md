@@ -4,7 +4,7 @@
 [![Status: Completed](https://img.shields.io/badge/Status-Completed-success.svg)](#)
 [![Environment: Kali Linux](https://img.shields.io/badge/Environment-Kali%20Linux-blueviolet.svg)](#)
 
-Repositorio oficial del Trabajo Práctico de Mitad de Cursada de la **Práctica Integradora de Ciberseguridad** (Comisión 1). Contiene la investigación teórica, el análisis exhaustivo de vulnerabilidades y la documentación de la práctica de auditoría defensiva y demostración de laboratorio realizada en un entorno aislado sobre **Kali Linux**.
+Repositorio oficial del Trabajo Práctico de Mitad de Cursada de la **Práctica Integradora de Ciberseguridad** (Comisión 1). Contiene la investigación teórica de 5 vulnerabilidades críticas, el análisis exhaustivo de **CVE-2021-41773** y la documentación de la práctica de auditoría defensiva y demostración de laboratorio realizada en un entorno aislado sobre **Kali Linux**.
 
 ---
 
@@ -20,7 +20,7 @@ Repositorio oficial del Trabajo Práctico de Mitad de Cursada de la **Práctica 
 ## 📄 Documentación y Reportes Finales
 
 Los documentos formales entregados se encuentran disponibles en la carpeta [`docs/`](docs/):
-* 📕 **Informe Completo en PDF:** [`docs/Informe_Ciberseguridad_Cervera_Modica_Completo.pdf`](docs/Informe_Ciberseguridad_Cervera_Modica_Completo.pdf)
+* 📕 **Informe Completo en PDF (13 páginas):** [`docs/Informe_Ciberseguridad_Cervera_Modica_Completo.pdf`](docs/Informe_Ciberseguridad_Cervera_Modica_Completo.pdf)
 * 📘 **Informe Completo editable en Word (.docx):** [`docs/Informe_Ciberseguridad_Cervera_Modica_Completo.docx`](docs/Informe_Ciberseguridad_Cervera_Modica_Completo.docx)
 * 📗 **Manual Práctico de Laboratorio Kali:** [`docs/MANUAL_PRACTICO_LABORATORIO_KALI.pdf`](docs/MANUAL_PRACTICO_LABORATORIO_KALI.pdf)
 
@@ -28,21 +28,28 @@ Los documentos formales entregados se encuentran disponibles en la carpeta [`doc
 
 ## 📌 Estructura del Trabajo Práctico
 
-El trabajo se divide en tres secciones conforme a la consigna académica:
+El trabajo unificado integra la investigación completa de ambos integrantes organizada en tres secciones:
 
-1. **Ejercicio 1: Investigación de vulnerabilidades** (3 fallas críticas explicadas en profundidad: activos afectados, identificación, impacto y mitigación).
-2. **Ejercicio 2: Análisis de una vulnerabilidad I** (Análisis en profundidad de **CVE-2021-41773** en Apache HTTP Server: causas a nivel código C, herramientas de detección y propuesta de solución justificada).
+1. **Ejercicio 1: Investigación de vulnerabilidades** (5 fallas críticas explicadas en profundidad: activos afectados, identificación, impacto, casos reales y mitigación).
+   * 1.1. `CVE-2017-0144` — EternalBlue (SMBv1)
+   * 1.2. `CVE-2021-41773` — Apache HTTP Server Path Traversal y RCE
+   * 1.3. `CVE-2021-44228` — Log4Shell en Apache Log4j 2
+   * 1.4. `CVE-2020-1472` — Zerologon en Active Directory Netlogon
+   * 1.5. `CVE-2019-0708` — BlueKeep en Servicios de Escritorio Remoto (RDP)
+2. **Ejercicio 2: Análisis de una vulnerabilidad I** (Análisis en profundidad de **CVE-2021-41773** en Apache HTTP Server: causas a nivel código C en `server/util.c`, herramientas de detección y propuesta de solución justificada).
 3. **Ejercicio 3: Demostración práctica en laboratorio propio (Opción A)** (Montaje de entorno controlado en Kali Linux, auditoría de versiones y configuración, verificación mediante Burp Suite y validación de la mitigación).
 
 ---
 
-## 🔍 Ejercicio 1: Síntesis de Vulnerabilidades Investigadas
+## 🔍 Ejercicio 1: Síntesis de las 5 Vulnerabilidades Investigadas
 
 | Vulnerabilidad | Código CVE | Protocolo / Software Afectado | Tipo de Falla | Vector de Impacto |
 | :--- | :--- | :--- | :--- | :--- |
 | **EternalBlue** | `CVE-2017-0144` | Microsoft SMBv1 (TCP 445 / `srv.sys`) | Buffer Overflow en Kernel Pool | Ejecución remota de código (SYSTEM), autopropagación de ransomware (WannaCry, NotPetya). |
 | **Apache Path Traversal** | `CVE-2021-41773` | Apache HTTP Server 2.4.49 (TCP 80/443) | Validación de rutas / Path Traversal | Lectura no autorizada de archivos del sistema y RCE si `mod_cgi` está habilitado. |
 | **Log4Shell** | `CVE-2021-44228` | Apache Log4j 2 (`log4j-core` < 2.17.1) | Inyección JNDI / Deserialización | RCE sin autenticación mediante `${jndi:ldap://...}` en cualquier log procesado. |
+| **Zerologon** | `CVE-2020-1472` | Netlogon Remote Protocol MS-NRPC (TCP 445/135) | Criptografía rota (AES-CFB8 con IV fijo de 16 ceros) | Elevación instantánea a Domain Admin sin credenciales, cambio de clave de máquina del DC y dump de NTDS.dit. |
+| **BlueKeep** | `CVE-2019-0708` | Remote Desktop Services RDP (TCP 3389 / `termdd.sys`) | Use-After-Free en canal `MS_T120` | RCE en modo kernel sin autenticación, propagación wormable, ataques DoS y criptominería. |
 
 ---
 
@@ -149,9 +156,10 @@ En la carpeta [`scripts/`](scripts/) se incluyen los scripts bash utilizados:
 
 ## 📚 Fuentes Consultadas
 
-* **NIST National Vulnerability Database (NVD):** Registros CVE-2017-0144, CVE-2021-41773, CVE-2021-42013 y CVE-2021-44228.
+* **NIST National Vulnerability Database (NVD):** Registros CVE-2017-0144, CVE-2021-41773, CVE-2021-42013, CVE-2021-44228, CVE-2020-1472 y CVE-2019-0708.
 * **Apache Software Foundation:** *Security Advisory for Apache HTTP Server 2.4 vulnerabilities* y documentación técnica de `mod_alias`.
-* **Microsoft Security Response Center (MSRC):** Boletín de Seguridad Microsoft MS17-010.
+* **Microsoft Security Response Center (MSRC):** Boletín de Seguridad Microsoft MS17-010 (EternalBlue), aviso oficial de BlueKeep (CVE-2019-0708) y actualización acumulativa de Netlogon (CVE-2020-1472).
+* **CISA (Cybersecurity and Infrastructure Security Agency):** Alertas de seguridad sobre explotación activa de Zerologon (AA20-296B).
 * **Material académico:** Presentaciones de la cursada de Ciberseguridad (Clases 3 a 20).
 
 ---
